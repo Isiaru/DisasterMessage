@@ -29,13 +29,13 @@ def load_data(database_filepath):
     Y : np.array containing the categories related to the messages
     labels : list with the categories' names
     '''
-    engine = create_engine('sqlite:///'+database_filepath+'.db').connect()
+    engine = create_engine('sqlite:///'+database_filepath).connect()
     df = pd.read_sql_table('message',con=engine)
     #remove http links
     for x in df['message']:
         urls = re.findall('https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', x)
         for u in urls:
-            df[df.message==x]['message'] = x.replace(u,'')
+            df.loc[df.message==x,'message'] = x.replace(u,'')
     
     #remove data without label        
     df['sum1'] = df.sum(axis=1)
