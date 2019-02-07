@@ -66,9 +66,7 @@ def save_data(df, database_filename):
 
 def main():
     if len(sys.argv) == 4:
-        #messages_filepath="disaster_messages.csv"
-        #categories_filepath="disaster_categories.csv"
-        #database_filepath="/home/workspace/models/DisasterMessage"
+        
         messages_filepath, categories_filepath, database_filepath = sys.argv[1:]
 
         print('Loading data...\n    MESSAGES: {}\n    CATEGORIES: {}'
