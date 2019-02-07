@@ -15,6 +15,9 @@ from sklearn.model_selection import GridSearchCV
 import pickle
 import re
 nltk.download('stopwords')
+nltk.download('punkt')
+nltk.download('wordnet')
+
 
 
 def load_data(database_filepath):
@@ -111,6 +114,13 @@ def evaluate_model(model, X_test, Y_test, category_names):
     return
 
 def save_model(model, model_filepath):
+    '''
+    INPUT
+    model : machine learning model to be saved
+    model_filepath : file path
+    OUTPUT
+    Save the model under the filepath provided
+    '''
     pickle.dump(model, open(model_filepath, 'wb'))
 
 
