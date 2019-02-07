@@ -1,5 +1,35 @@
 # Disaster Response Pipeline Project
 
+### Project:
+Disaster Response Pipeline Project is a project from the Udacity's Data Science Nanodegree. The goal is to create a machine learning pipeline used to categorize disaster events. Based on the categorization an appropriate message can be sent to an agency for relief.
+The model is trained on real data provided by [Figure Eight](https://www.figure-eight.com).
+
+Project consists in three parts:
+
+1. ETL Pipeline
+
+The Python script, data/process_data.py is a cleaning pipeline that:
+
+* Loads the messages and categories datasets
+* Merges the two datasets
+* Cleans the data
+* Stores it in a SQLite database
+
+2. ML Pipeline
+
+The Python script, train_classifier.py, is a machine learning pipeline that:
+
+* Loads data from the SQLite database
+* Splits the dataset into training and test sets
+* Builds a text processing and machine learning pipeline
+* Trains and tunes a model using GridSearchCV
+* Outputs results on the test set
+* Exports the final model as a pickle file
+
+3. Web Flask App
+
+Using this app a worker can input a message and visualize the result of the classification.
+
 ### Instructions:
 1. Run the following commands in the project's root directory to set up your database and model.
 
