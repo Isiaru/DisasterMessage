@@ -28,6 +28,17 @@ def load_data(database_filepath):
     '''
     engine = create_engine('sqlite:///'+database_filepath+'.db').connect()
     df = pd.read_sql_table('message',con=engine)
+    #remove http links
+    for x in df['message']:
+        urls = re.findall('https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', x)
+        for u in urls:
+            df[df.message==x]['message'] = x.replace(u,'')
+    
+    #remove data without label        
+    df['sum1'] = df.sum(axis=1)
+    df = df[df['sum1']>0].copy() 
+    df = df.drop(['sum1'],axis=1)
+    
     X = df[['message']].astype(str).values.ravel()
     Y = df.drop(['id','message','original','genre'],axis=1).astype(int)
     labels = Y.columns
