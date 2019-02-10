@@ -14,10 +14,12 @@ from sklearn.metrics import classification_report
 from sklearn.model_selection import GridSearchCV
 import pickle
 import re
+from imblearn.over_sampling import ADASYN, SMOTE, RandomOverSampler
+from imblearn.under_sampling import RandomUnderSampler
+from imblearn.pipeline import make_pipeline
 nltk.download('stopwords')
 nltk.download('punkt')
 nltk.download('wordnet')
-
 
 
 def load_data(database_filepath):
@@ -81,15 +83,28 @@ def build_model():
     OUTPUT
     model : pipeline model passed into GridSearch
     '''
-    model = Pipeline([
-    ('vect',  CountVectorizer(tokenizer=tokenize)),
-    ('tfidf', TfidfTransformer()),
-    ('multiout', MultiOutputClassifier(estimator = AdaBoostClassifier(random_state=42), n_jobs=-1 ))
-    ])
+    ##First idea
+    #model = Pipeline([
+    #('vect',  CountVectorizer(tokenizer=tokenize)),
+    #('tfidf', TfidfTransformer()),
+    #('multiout', MultiOutputClassifier(estimator = AdaBoostClassifier(random_state=42), n_jobs=-1 ))
+    #])
     
+    ##Second idea
+    #rf = RandomForestClassifier(n_estimators=1,random_state=42)
+    #base_estimator=rf,
+    ad = AdaBoostClassifier(random_state=42)
+    tvec = CountVectorizer(tokenizer=tokenize)
+    tdfi = TfidfTransformer()
+    
+    model = make_pipeline(SMOTE(random_state=777),ad)
+    model = MultiOutputClassifier(model, n_jobs = -1)
+    model = make_pipeline(tvec,tdfi,model)
+    
+    #print(model.get_params().keys())
     parameters = {
-        'multiout__estimator__n_estimators': [100,50],
-        'multiout__estimator__learning_rate': [0.1,1,10]
+        'multioutputclassifier__estimator__adaboostclassifier__n_estimators':[50,100],
+        #'multioutputclassifier__estimator__adaboostclassifier__learning_rate':[0.1,1]
         
     }
     model = GridSearchCV(model,parameters)
@@ -104,13 +119,16 @@ def evaluate_model(model, X_test, Y_test, category_names):
     Y_test : labels associated to the test dataset
     category_names : list for string corresponding to the labels'names
     OUTPUT
-    Print
+    Print a report for each categories of the classification results
     '''
     y_pred = model.predict(X_test)
     print('Scoring from the testing set')
-    print(classification_report(pd.DataFrame(Y_test).values,
-                               pd.DataFrame(y_pred).values,
-                               target_names=category_names)) 
+    for col, col_name in zip(range(len(category_names)), category_names):
+        print(col_name)
+        print(classification_report(Y_test[:,col],
+                               y_pred[:,col]
+                               ))
+    
     return
 
 def save_model(model, model_filepath):
